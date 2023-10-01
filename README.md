@@ -33,12 +33,12 @@ docker run -it --gpus all -p 7778:8888 --name xs_ngc --ipc=host -v /home/d1/xxs:
 - CUDA >= 9.0 (10.1 is recommended)
 
 ```bash
-  # python dependencies
-  pip install -r requirement.txt
-
   # clone repo
   git clone https://github.com/brucexia1/DB.git
   cd DB/
+
+  # python dependencies
+  pip install -r requirement.txt
 
   # build deformable convolution opertor
   # you need to delete the build directory before you re-build it.
