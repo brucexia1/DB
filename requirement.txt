@@ -1,6 +1,6 @@
 pyyaml 
 tqdm 
-tensorboardX 
+tensorboardX==2.1
 opencv-python==4.1.2.30
 anyconfig 
 munch 
