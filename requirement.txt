@@ -1,6 +1,6 @@
 pyyaml 
 tqdm 
-tensorboardX==2.1
+tensorboardX
 opencv-python==4.1.2.30
 anyconfig 
 munch 
@@ -11,7 +11,7 @@ pyclipper
 gevent 
 gevent-websocket 
 flask 
-editdistance==0.5.3
+editdistance
 scikit-image 
 imgaug==0.2.8
 

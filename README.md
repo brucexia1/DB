@@ -25,12 +25,12 @@ Part of the code is inherited from [MegReader](https://github.com/Megvii-CSG/Meg
 
 ## Installation
 ### Docker Based Build Env 
-docker run -it --gpus all -p 7778:8888 --name xs_ngc --ipc=host -v /home/d1/xxs:/home/data nvcr.io/nvidia/pytorch:19.09-py3
+docker run -it --gpus all -p 7777:8888 --name xsngc_2112 --ipc=host -v /home/d1/xxs:/home/data nvcr.io/nvidia/pytorch:21.12-py3
 ### Requirements:
 - Python3
-- PyTorch == 1.2 
-- GCC >= 4.9 (This is important for PyTorch)
-- CUDA >= 9.0 (10.1 is recommended)
+- PyTorch
+- GCC
+- CUDA
 
 ```bash
   # clone repo
