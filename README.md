@@ -37,7 +37,7 @@ docker run -it --gpus all -p 7778:8888 --name xs_ngc --ipc=host -v /home/d1/xxs:
   pip install -r requirement.txt
 
   # clone repo
-  git clone https://github.com/MhLiao/DB.git
+  git clone https://github.com/brucexia1/DB.git
   cd DB/
 
   # build deformable convolution opertor
