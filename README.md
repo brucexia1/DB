@@ -24,7 +24,8 @@ Part of the code is inherited from [MegReader](https://github.com/Megvii-CSG/Meg
 
 
 ## Installation
-
+## Build Docker Base Env
+docker run -it --gpus all -p 7778:8888 --name xs_ngc --ipc=host -v /home/d1/xxs:/home/data nvcr.io/nvidia/pytorch:19.09-py3
 ### Requirements:
 - Python3
 - PyTorch == 1.2 
@@ -37,17 +38,17 @@ Part of the code is inherited from [MegReader](https://github.com/Megvii-CSG/Meg
   # for that, check that `which conda`, `which pip` and `which python` points to the
   # right path. From a clean conda env, this is what you need to do
 
-  conda create --name DB -y
-  conda activate DB
+  ##conda create --name DB -y
+  ##conda activate DB
 
   # this installs the right pip and dependencies for the fresh python
-  conda install ipython pip
+  ##conda install ipython pip
 
   # python dependencies
   pip install -r requirement.txt
 
   # install PyTorch with cuda-10.1
-  conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+  ##conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 
   # clone repo
   git clone https://github.com/MhLiao/DB.git
@@ -57,7 +58,7 @@ Part of the code is inherited from [MegReader](https://github.com/Megvii-CSG/Meg
   # make sure your cuda path of $CUDA_HOME is the same version as your cuda in PyTorch
   # make sure GCC >= 4.9
   # you need to delete the build directory before you re-build it.
-  echo $CUDA_HOME
+  ##echo $CUDA_HOME
   cd assets/ops/dcn/
   python setup.py build_ext --inplace
 
