@@ -11,7 +11,7 @@ pyclipper
 gevent 
 gevent-websocket 
 flask 
-editdistance 
+editdistance==0.5.3
 scikit-image 
 imgaug==0.2.8
 
