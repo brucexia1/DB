@@ -38,23 +38,15 @@ class DataLoader(Configurable, torch.utils.data.DataLoader):
         self.num_workers = cmd.get('num_workers', self.num_workers)
 
         if cmd.get('distributed'):
-            sampler = DistributedSampler(
-                self.dataset, shuffle=self.shuffle,
-                num_replicas=cmd['num_gpus'])
-            batch_sampler = BatchSampler(
-                sampler, self.batch_size//cmd['num_gpus'], False)
-            torch.utils.data.DataLoader.__init__(
-                self, self.dataset, batch_sampler=batch_sampler,
+            sampler = DistributedSampler(self.dataset, shuffle=self.shuffle, num_replicas=cmd['num_gpus'])
+            batch_sampler = BatchSampler(sampler, self.batch_size//cmd['num_gpus'], False)
+            torch.utils.data.DataLoader.__init__(self, self.dataset, batch_sampler=batch_sampler,
                 num_workers=self.num_workers, pin_memory=False,
-                drop_last=self.drop_last, collate_fn=self.collect_fn,
-                worker_init_fn=default_worker_init_fn)
+                drop_last=self.drop_last, collate_fn=self.collect_fn, worker_init_fn=default_worker_init_fn)
         else:
-            torch.utils.data.DataLoader.__init__(
-                self, self.dataset,
-                batch_size=self.batch_size, num_workers=self.num_workers,
-                drop_last=self.drop_last, shuffle=self.shuffle,
-                pin_memory=True, collate_fn=self.collect_fn,
-                worker_init_fn=default_worker_init_fn)
+            torch.utils.data.DataLoader.__init__(self, self.dataset,
+                batch_size=self.batch_size, num_workers=self.num_workers, drop_last=self.drop_last, shuffle=self.shuffle,
+                pin_memory=True, collate_fn=self.collect_fn, worker_init_fn=default_worker_init_fn)
         self.collect_fn = str(self.collect_fn)
 
 
@@ -112,20 +104,17 @@ class DistributedSampler(Sampler):
     def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True):
         if num_replicas is None:
             if not dist.is_available():
-                raise RuntimeError(
-                    "Requires distributed package to be available")
+                raise RuntimeError("Requires distributed package to be available")
             num_replicas = dist.get_world_size()
         if rank is None:
             if not dist.is_available():
-                raise RuntimeError(
-                    "Requires distributed package to be available")
+                raise RuntimeError("Requires distributed package to be available")
             rank = dist.get_rank()
         self.dataset = dataset
         self.num_replicas = num_replicas
         self.rank = rank
         self.epoch = 0
-        self.num_samples = int(
-            math.ceil(len(self.dataset) * 1.0 / self.num_replicas))
+        self.num_samples = int(math.ceil(len(self.dataset) * 1.0 / self.num_replicas))
         self.total_size = self.num_samples * self.num_replicas
         self.shuffle = shuffle
 
@@ -185,18 +174,12 @@ class InfiniteDataLoader(Configurable, torch.utils.data.DataLoader):
 
     def __init__(self, **kwargs):
         self.load_all(**kwargs)
-
         cmd = kwargs['cmd']
         if 'batch_size' in cmd:
             self.batch_size = cmd['batch_size']
 
         sampler = InfiniteOrderedSampler(self.dataset, self.limit_size)
-
-        torch.utils.data.DataLoader.__init__(
-            self, self.dataset,
-            batch_size=self.batch_size, num_workers=self.num_workers,
-            sampler=sampler, worker_init_fn=default_worker_init_fn,
-        )
+        torch.utils.data.DataLoader.__init__(self, self.dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler, worker_init_fn=default_worker_init_fn)
 
 
 class RandomSampleSampler(Sampler):
@@ -242,9 +225,4 @@ class RandomSampleDataLoader(Configurable, torch.utils.data.DataLoader):
         assert(len(dataset) == len(probs))
 
         sampler = RandomSampleSampler(dataset, probs, self.size)
-
-        torch.utils.data.DataLoader.__init__(
-            self, dataset,
-            batch_size=self.batch_size, num_workers=self.num_workers,
-            sampler=sampler, worker_init_fn=default_worker_init_fn,
-        )
+        torch.utils.data.DataLoader.__init__(self, dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler, worker_init_fn=default_worker_init_fn)

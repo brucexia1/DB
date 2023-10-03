@@ -14,22 +14,14 @@ def main():
     parser.add_argument('--resume', type=str, help='Resume from checkpoint')
     parser.add_argument('--image_path', type=str, help='image path')
     parser.add_argument('--result_dir', type=str, default='./demo_results/', help='path to save results')
-    parser.add_argument('--data', type=str,
-                        help='The name of dataloader which will be evaluated on.')
-    parser.add_argument('--image_short_side', type=int, default=736,
-                        help='The threshold to replace it in the representers')
-    parser.add_argument('--thresh', type=float,
-                        help='The threshold to replace it in the representers')
-    parser.add_argument('--box_thresh', type=float, default=0.6,
-                        help='The threshold to replace it in the representers')
-    parser.add_argument('--visualize', action='store_true',
-                        help='visualize maps in tensorboard')
-    parser.add_argument('--resize', action='store_true',
-                        help='resize')
-    parser.add_argument('--polygon', action='store_true',
-                        help='output polygons if true')
-    parser.add_argument('--eager', '--eager_show', action='store_true', dest='eager_show',
-                        help='Show iamges eagerly')
+    parser.add_argument('--data', type=str, help='The name of dataloader which will be evaluated on.')
+    parser.add_argument('--image_short_side', type=int, default=736, help='The threshold to replace it in the representers')
+    parser.add_argument('--thresh', type=float, help='The threshold to replace it in the representers')
+    parser.add_argument('--box_thresh', type=float, default=0.6, help='The threshold to replace it in the representers')
+    parser.add_argument('--visualize', action='store_true', help='visualize maps in tensorboard')
+    parser.add_argument('--resize', action='store_true', help='resize')
+    parser.add_argument('--polygon', action='store_true', help='output polygons if true')
+    parser.add_argument('--eager', '--eager_show', action='store_true', dest='eager_show', help='Show iamges eagerly')
 
     args = parser.parse_args()
     args = vars(args)
@@ -71,8 +63,7 @@ class Demo:
             print("Checkpoint not found: " + path)
             return
         print("Resuming from " + path)
-        states = torch.load(
-            path, map_location=self.device)
+        states = torch.load(path, map_location=self.device)
         model.load_state_dict(states, strict=False)
         print("Resumed from " + path)
 

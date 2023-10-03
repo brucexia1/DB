@@ -19,8 +19,7 @@ class Config(object):
 
         for path in conf.get('import', []):
             parent_conf = self.load(path)
-            parent_packages, parent_defines = self.compile(
-                parent_conf, return_packages=True)
+            parent_packages, parent_defines = self.compile(parent_conf, return_packages=True)
             packages.extend(parent_packages)
             defines.update(parent_defines)
 
@@ -56,11 +55,9 @@ class Config(object):
             return conf
         elif isinstance(conf, dict):
             if 'class' in conf:
-                conf['class'] = self.find_class_in_modules(
-                    conf['class'], modules)
+                conf['class'] = self.find_class_in_modules(conf['class'], modules)
             if 'base' in conf:
                 base = conf.copy().pop('base')
-
                 if not isinstance(base, str):
                     raise RuntimeError('base must be str')
 
@@ -147,8 +144,7 @@ class Configurable(metaclass=StateMeta):
         # Args passed from command line
         cmd = kwargs.pop('cmd', dict())
         if state_name in kwargs:
-            setattr(self, state_name, self.create_member_from_config(
-                (kwargs[state_name], cmd)))
+            setattr(self, state_name, self.create_member_from_config((kwargs[state_name], cmd)))
         else:
             setattr(self, state_name, self.states[state_name].default)
 
@@ -168,8 +164,7 @@ class Configurable(metaclass=StateMeta):
 
     def dump(self):
         state = {}
-        state['class'] = self.__class__.__module__ + \
-            '.' + self.__class__.__name__
+        state['class'] = self.__class__.__module__ + '.' + self.__class__.__name__
         for name, value in self.states.items():
             obj = getattr(self, name)
             state[name] = self.dump_obj(obj)

@@ -24,8 +24,7 @@ def constant_init(module, constant, bias=0):
 
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 
 class BasicBlock(nn.Module):
@@ -43,8 +42,7 @@ class BasicBlock(nn.Module):
             self.with_modulated_dcn = dcn.get('modulated', False)
         # self.conv2 = conv3x3(planes, planes)
         if not self.with_dcn or fallback_on_stride:
-            self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
-                                   padding=1, bias=False)
+            self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, padding=1, bias=False)
         else:
             deformable_groups = dcn.get('deformable_groups', 1)
             if not self.with_modulated_dcn:
@@ -55,18 +53,8 @@ class BasicBlock(nn.Module):
                 from assets.ops.dcn import ModulatedDeformConv
                 conv_op = ModulatedDeformConv
                 offset_channels = 27
-            self.conv2_offset = nn.Conv2d(
-                planes,
-                deformable_groups * offset_channels,
-                kernel_size=3,
-                padding=1)
-            self.conv2 = conv_op(
-                planes,
-                planes,
-                kernel_size=3,
-                padding=1,
-                deformable_groups=deformable_groups,
-                bias=False)
+            self.conv2_offset = nn.Conv2d(planes, deformable_groups * offset_channels, kernel_size=3, padding=1)
+            self.conv2 = conv_op(planes, planes, kernel_size=3, padding=1, deformable_groups=deformable_groups, bias=False)
         self.bn2 = BatchNorm2d(planes)
         self.downsample = downsample
         self.stride = stride
@@ -114,8 +102,7 @@ class Bottleneck(nn.Module):
             fallback_on_stride = dcn.get('fallback_on_stride', False)
             self.with_modulated_dcn = dcn.get('modulated', False)
         if not self.with_dcn or fallback_on_stride:
-            self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
-                                   stride=stride, padding=1, bias=False)
+            self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
         else:
             deformable_groups = dcn.get('deformable_groups', 1)
             if not self.with_modulated_dcn:
@@ -126,13 +113,8 @@ class Bottleneck(nn.Module):
                 from assets.ops.dcn import ModulatedDeformConv
                 conv_op = ModulatedDeformConv
                 offset_channels = 27
-            self.conv2_offset = nn.Conv2d(
-                planes, deformable_groups * offset_channels,
-                kernel_size=3,
-                padding=1)
-            self.conv2 = conv_op(
-                planes, planes, kernel_size=3, padding=1, stride=stride,
-                deformable_groups=deformable_groups, bias=False)
+            self.conv2_offset = nn.Conv2d(planes, deformable_groups * offset_channels, kernel_size=3, padding=1)
+            self.conv2 = conv_op(planes, planes, kernel_size=3, padding=1, stride=stride, deformable_groups=deformable_groups, bias=False)
         self.bn2 = BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = BatchNorm2d(planes * 4)
@@ -176,29 +158,22 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, layers, num_classes=1000, 
-                 dcn=None, stage_with_dcn=(False, False, False, False)):
+    def __init__(self, block, layers, num_classes=1000, dcn=None, stage_with_dcn=(False, False, False, False)):
         self.dcn = dcn
         self.stage_with_dcn = stage_with_dcn
         self.inplanes = 64
         super(ResNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
-                               bias=False)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
-        self.layer2 = self._make_layer(
-            block, 128, layers[1], stride=2, dcn=dcn)
-        self.layer3 = self._make_layer(
-            block, 256, layers[2], stride=2, dcn=dcn)
-        self.layer4 = self._make_layer(
-            block, 512, layers[3], stride=2, dcn=dcn)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dcn=dcn)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dcn=dcn)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dcn=dcn)
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
-    
         self.smooth = nn.Conv2d(2048, 256, kernel_size=1, stride=1, padding=1)    
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
@@ -216,14 +191,12 @@ class ResNet(nn.Module):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes * block.expansion,
-                          kernel_size=1, stride=stride, bias=False),
+                nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=stride, bias=False),
                 BatchNorm2d(planes * block.expansion),
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes,
-                            stride, downsample, dcn=dcn))
+        layers.append(block(self.inplanes, planes, stride, downsample, dcn=dcn))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes, dcn=dcn))
@@ -251,8 +224,7 @@ def resnet18(pretrained=True, **kwargs):
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet18'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url( model_urls['resnet18'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
 
 def deformable_resnet18(pretrained=True, **kwargs):
@@ -261,13 +233,10 @@ def deformable_resnet18(pretrained=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2],
-                    dcn=dict(modulated=True,
-                            deformable_groups=1,
-                            fallback_on_stride=False),
+                    dcn=dict(modulated=True, deformable_groups=1, fallback_on_stride=False),
                     stage_with_dcn=[False, True, True, True], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet18'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']), strict=False)
     return model
 
 
@@ -278,8 +247,7 @@ def resnet34(pretrained=True, **kwargs):
     """
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet34'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
 
 
@@ -290,8 +258,7 @@ def resnet50(pretrained=True, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
 
 
@@ -301,14 +268,10 @@ def deformable_resnet50(pretrained=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3],
-                   dcn=dict(modulated=True,
-                            deformable_groups=1,
-                            fallback_on_stride=False),
-                   stage_with_dcn=[False, True, True, True],
-                   **kwargs)
+                   dcn=dict(modulated=True, deformable_groups=1, fallback_on_stride=False),
+                   stage_with_dcn=[False, True, True, True], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']), strict=False)
     return model
 
 
@@ -319,8 +282,7 @@ def resnet101(pretrained=True, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet101'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet101'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
 
 
@@ -331,6 +293,5 @@ def resnet152(pretrained=True, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet152'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet152'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
